@@ -31,7 +31,7 @@ router.post('/login', (req, res) => {
 		bcrypt.compare(password, user.password, (err, isMatch) => {
 			if (err || !isMatch) return res.status(401).send('Contraseña incorrecta');
 
-			const token = jwt.sign({ id: user.id, username: user.username }, secretKey, { expiresIn: '1m' });
+			const token = jwt.sign({ id: user.id, username: user.username }, secretKey, { expiresIn: '1h' });
 			res.json({ message: 'Login exitoso', token });
 		});
 	});
