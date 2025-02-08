@@ -1,27 +1,26 @@
 const express = require('express');
-const db = require('../db/config');
+const database = require('../db/config');
+const db = database.db;
 const router = express.Router();
 
-// Crear un enlace corto
-router.post('/', (req, res) => {
-	const { original_url } = req.body;
-	const user_id = req.user.id;	// Extraído del middleware JWT
-
-	const shortUrl = Math.random().toString(36).substring(2, 8);	// Generar un código corto aleatorio
-
-	db.run('INSERT INTO links (original_url, short_url, user_id) VALUES (?, ?, ?)', [original_url, shortUrl, user_id], function (err) {
-		if (err) return res.status(500).send('Error al crear el enlace');
-		res.status(201).send({ short_url: shortUrl });
-	});
-});
 
 // Redirigir al enlace original
 router.get('/:shortUrl', (req, res) => {
 	const { shortUrl } = req.params;
+	console.log('Short URL solicitada:', shortUrl);
 
 	db.get('SELECT * FROM links WHERE short_url = ?', [shortUrl], (err, row) => {
 		if (err || !row) return res.status(404).send('Enlace no encontrado');
-		res.redirect(row.original_url);
+		console.log('Enlace encontrado:', row.original_url);
+		// after the reponse, the client goes directly to the original URL (row.original_url), without the direction of the server in front of it
+		// añade http o https si no está presente
+		let url = row.original_url;
+		const http = 'http://';
+		const https = 'https://';
+		if (!url.startsWith(http) && !url.startsWith(https)) {
+			url = http + url;
+		}
+		res.redirect(url);
 	});
 });
 
