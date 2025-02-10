@@ -79,7 +79,7 @@ It checks that the token provided is valid and, if so, it returns a JSON object 
 ```json
 {
 	"valid": true,
-	"user": decoded
+	"user": "decoded"
 }
 ```
 where `decoded` is the decoded token. This endpoint is used by the frontend to check if the token is still valid. If it is, then no new login is required.
